@@ -50,6 +50,7 @@ const StyledTitle = styled(Title)`
   margin-bottom: 24px !important;
   background: linear-gradient(90deg, #1890ff 0%, #36cfc9 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: ${fadeIn} 0.8s ease-out forwards;
   opacity: 0;
@@ -171,11 +172,10 @@ export default function Hero() {
       <HeroContainer>
         <ContentWrapper>
           <StyledTitle level={1}>
-            Building the Future with AI-Powered Solutions
+            Deep Learn
           </StyledTitle>
           <StyledParagraph>
-            Transform your business with our cutting-edge AI technologies. From natural language processing 
-            to computer vision, we're pushing the boundaries of what's possible with artificial intelligence.
+            Don't be afraid to learn — AI is with you!
           </StyledParagraph>
           <Space size={16}>
             <Link href="/#projects" passHref>

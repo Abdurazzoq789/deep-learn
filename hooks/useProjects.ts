@@ -1,15 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  tags: string[];
-  category: string;
-  githubUrl?: string;
-  demoUrl?: string;
-}
+import { Project } from '@/types/project';
 
 const PROJECTS_QUERY_KEY = 'projects';
 
@@ -23,7 +14,9 @@ export const mockProjects: Project[] = [
     tags: ['Machine Learning', 'Data Visualization', 'Cloud'],
     category: 'Machine Learning',
     githubUrl: 'https://github.com/yourusername/analytics-platform',
-    demoUrl: 'https://analytics-demo.example.com'
+    demoUrl: 'https://analytics-demo.example.com',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: '2',
@@ -33,7 +26,9 @@ export const mockProjects: Project[] = [
     tags: ['Computer Vision', 'Retail', 'AI'],
     category: 'Computer Vision',
     githubUrl: 'https://github.com/yourusername/retail-vision',
-    demoUrl: 'https://retail-vision-demo.example.com'
+    demoUrl: 'https://retail-vision-demo.example.com',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: '3',
@@ -43,7 +38,9 @@ export const mockProjects: Project[] = [
     tags: ['NLP', 'API', 'AI'],
     category: 'NLP',
     githubUrl: 'https://github.com/yourusername/nlp-api',
-    demoUrl: 'https://nlp-api-demo.example.com'
+    demoUrl: 'https://nlp-api-demo.example.com',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: '4',
@@ -53,7 +50,9 @@ export const mockProjects: Project[] = [
     tags: ['IoT', 'Predictive Analytics', 'AI'],
     category: 'IoT',
     githubUrl: 'https://github.com/yourusername/predictive-maintenance',
-    demoUrl: 'https://predictive-maintenance-demo.example.com'
+    demoUrl: 'https://predictive-maintenance-demo.example.com',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
 ];
 

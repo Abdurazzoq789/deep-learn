@@ -3,17 +3,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider } from 'antd';
 import theme from '@/theme/theme';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Global, css } from '@emotion/react';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
 
 const globalStyles = css`
   :root {
@@ -86,6 +77,15 @@ type ProvidersProps = {
 };
 
 export function Providers({ children }: ProvidersProps) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  }));
+
   return (
     <ConfigProvider theme={theme}>
       <QueryClientProvider client={queryClient}>

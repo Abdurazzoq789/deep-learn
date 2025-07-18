@@ -1,6 +1,6 @@
 import { Card, Typography, Tag, Space, Badge } from 'antd';
 import styled from '@emotion/styled';
-import { Project } from '@/hooks/useProjects';
+import { Project } from '@/types/project';
 import Image from 'next/image';
 import ProjectActions from './ProjectActions';
 import { formatCategory } from '@/utils/projectUtils';
@@ -219,7 +219,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               
               {tags && tags.length > 0 && (
                 <TagsContainer>
-                  {tags.slice(0, 3).map((tag, index) => (
+                  {tags.slice(0, 3).map((tag: string, index: number) => (
                     <Tag key={index}>
                       {tag}
                     </Tag>
