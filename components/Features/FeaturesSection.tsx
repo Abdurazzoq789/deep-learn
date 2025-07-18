@@ -1,0 +1,224 @@
+import { Row, Col, Typography, Card } from 'antd';
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
+import { 
+  RobotOutlined, 
+  ApiOutlined, 
+  CloudServerOutlined, 
+  LineChartOutlined,
+  DatabaseOutlined,
+  SecurityScanOutlined,
+  TeamOutlined,
+  CodeSandboxOutlined
+} from '@ant-design/icons';
+
+const { Title, Paragraph } = Typography;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const Section = styled.section`
+  padding: 100px 0;
+  background: linear-gradient(180deg, #f9fbfd 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+`;
+
+const Container = styled.div`
+  position: relative;
+  z-index: 1;
+`;
+
+const SectionTitle = styled(Title)`
+  text-align: center;
+  margin-bottom: 16px !important;
+  font-size: 2.5rem !important;
+  background: linear-gradient(90deg, #1890ff 0%, #36cfc9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  margin: 0 auto 16px !important;
+  opacity: 0;
+  animation: ${fadeIn} 0.6s ease-out 0.2s forwards;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem !important;
+  }
+`;
+
+const SectionSubtitle = styled(Paragraph)`
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 64px !important;
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  opacity: 0;
+  animation: ${fadeIn} 0.6s ease-out 0.3s forwards;
+`;
+
+const FeatureCard = styled(Card)`
+  height: 100%;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(24, 144, 255, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1890ff 0%, #36cfc9 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  
+  .ant-card-body {
+    padding: 32px 24px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(24, 144, 255, 0.1);
+    border-color: rgba(24, 144, 255, 0.2);
+    
+    &::before {
+      transform: scaleX(1);
+    }
+    
+    .feature-icon {
+      transform: scale(1.1) rotate(5deg);
+      background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+`;
+
+const IconWrapper = styled.div`
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(54, 207, 201, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  transition: all 0.4s ease;
+  
+  .feature-icon {
+    font-size: 32px;
+    color: #1890ff;
+    transition: all 0.4s ease;
+  }
+`;
+
+const FeatureTitle = styled(Title)`
+  font-size: 1.4rem !important;
+  margin-bottom: 16px !important;
+  color: #2c3e50 !important;
+  text-align: center;
+  font-weight: 700 !important;
+`;
+
+const FeatureDescription = styled(Paragraph)`
+  color: #666 !important;
+  text-align: center;
+  margin-bottom: 0 !important;
+  font-size: 1rem;
+  line-height: 1.7;
+`;
+
+const features = [
+  {
+    icon: <RobotOutlined className="feature-icon" />,
+    title: 'Advanced AI Models',
+    description: 'Harness the power of cutting-edge machine learning models that deliver accurate predictions and actionable insights for your business.'
+  },
+  {
+    icon: <ApiOutlined className="feature-icon" />,
+    title: 'RESTful APIs',
+    description: 'Seamlessly integrate with your existing systems using our well-documented, developer-friendly RESTful APIs.'
+  },
+  {
+    icon: <CloudServerOutlined className="feature-icon" />,
+    title: 'Scalable Infrastructure',
+    description: 'Our cloud-native architecture ensures high availability, reliability, and effortless scaling to meet your growing demands.'
+  },
+  {
+    icon: <LineChartOutlined className="feature-icon" />,
+    title: 'Real-time Analytics',
+    description: 'Gain instant insights and make data-driven decisions with our powerful real-time analytics and visualization tools.'
+  },
+  {
+    icon: <DatabaseOutlined className="feature-icon" />,
+    title: 'Data Management',
+    description: 'Efficiently manage and process large datasets with our robust data storage and processing solutions.'
+  },
+  {
+    icon: <SecurityScanOutlined className="feature-icon" />,
+    title: 'Enterprise Security',
+    description: 'Your data is protected with enterprise-grade security measures including encryption and access controls.'
+  },
+  {
+    icon: <TeamOutlined className="feature-icon" />,
+    title: 'Dedicated Support',
+    description: 'Our expert support team is available 24/7 to assist you with any questions or issues you may encounter.'
+  },
+  {
+    icon: <CodeSandboxOutlined className="feature-icon" />,
+    title: 'Easy Integration',
+    description: 'Quickly integrate our AI solutions into your workflow with our comprehensive SDKs and developer tools.'
+  }
+];
+
+export default function FeaturesSection() {
+  return (
+    <Section id="features">
+      <Container className="container">
+        <SectionTitle level={2}>Powerful Features</SectionTitle>
+        <SectionSubtitle>
+          Discover how our AI solutions can transform your business with advanced features and capabilities
+        </SectionSubtitle>
+        <Row gutter={[24, 32]}>
+          {features.map((feature, index) => (
+            <Col 
+              key={index} 
+              xs={24} 
+              sm={12} 
+              lg={6}
+              style={{
+                opacity: 0,
+                animation: `${fadeIn} 0.6s ease-out ${0.4 + (index * 0.1)}s forwards`
+              }}
+            >
+              <FeatureCard>
+                <IconWrapper>
+                  {feature.icon}
+                </IconWrapper>
+                <FeatureTitle level={3}>{feature.title}</FeatureTitle>
+                <FeatureDescription>
+                  {feature.description}
+                </FeatureDescription>
+              </FeatureCard>
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </Section>
+  );
+}
