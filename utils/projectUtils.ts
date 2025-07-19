@@ -1,4 +1,4 @@
-import { Project } from '@/hooks/useProjects';
+import { Project } from '@/types/project';
 
 /**
  * Extracts unique categories from an array of projects

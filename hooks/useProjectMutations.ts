@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, UseMutationResult } from '@tanstack/react-query';
-import { Project } from './useProjects';
+import { Project } from '@/types/project';
 import { message } from 'antd';
 
 const PROJECTS_QUERY_KEY = 'projects';

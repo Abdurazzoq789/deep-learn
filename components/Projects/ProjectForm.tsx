@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Input, Button, Modal, Select, Space, Upload, message, UploadFile, UploadProps } from 'antd';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Project } from '@/hooks/useProjects';
+import { Project } from '@/types/project';
 import { formatCategory } from '@/utils/projectUtils';
 
 const { TextArea } = Input;
