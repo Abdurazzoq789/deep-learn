@@ -212,7 +212,7 @@ const ContactSection = () => {
         </div>
 
         <Row gutter={[48, 48]}>
-          <Col xs={24} lg={12} style={{ opacity: 0, animation: `${fadeIn} 0.6s ease-out 0.2s forwards` }}>
+          <Col xs={24} lg={12} style={{ animation: `${fadeIn} 0.6s ease-out 0.2s forwards` }}>
             <ContactCard>
               <ContactForm form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item 
@@ -261,7 +261,7 @@ const ContactSection = () => {
             </ContactCard>
           </Col>
           
-          <Col xs={24} lg={12} style={{ opacity: 0, animation: `${fadeIn} 0.6s ease-out 0.4s forwards` }}>
+          <Col xs={24} lg={12} style={{ animation: `${fadeIn} 0.6s ease-out 0.4s forwards` }}>
             <ContactCard style={{ height: '100%' }}>
               <ContactInfo>
                 <div>
@@ -279,7 +279,7 @@ const ContactSection = () => {
                     <PhoneOutlined />
                     <div className="info-content">
                       <h4>Call Us</h4>
-                      <a href="tel:+1234567890">+1 (234) 567-890</a>
+                      <a href="tel:+998946001702">+998 94 600 17 02</a>
                     </div>
                   </InfoItem>
                   
@@ -295,6 +295,7 @@ const ContactSection = () => {
                 <div>
                   <h4 style={{ marginBottom: 16, color: '#2c3e50' }}>Follow Us</h4>
                   <SocialLinks>
+                    <a href="https://t.me/aabdurazzoq" target="_blank" rel="noopener" aria-label="Telegram"><i className="fab fa-telegram-plane"></i></a>
                     <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
                     <a href="#" aria-label="GitHub"><i className="fab fa-github"></i></a>
                     <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin-in"></i></a>

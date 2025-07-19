@@ -233,14 +233,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           }
         />
         
-        {(onEdit || onDelete || onView || githubUrl || demoUrl) && (
+        {/* {(onEdit || onDelete || onView || githubUrl || demoUrl) && (
           <ProjectActions
             project={project}
             onEdit={onEdit}
             onDelete={onDelete}
             onView={onView}
           />
-        )}
+        )} */}
       </StyledCard>
     </CategoryBadge>
   );

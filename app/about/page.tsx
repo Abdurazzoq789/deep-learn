@@ -1,7 +1,7 @@
 'use client';
 
-import FeaturesSection from '@/components/Features/FeaturesSection';
+import AboutSection from '@/components/About/AboutSection';
 
 export default function AboutPage() {
-  return <FeaturesSection />;
+  return <AboutSection />;
 }

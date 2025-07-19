@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Dropdown, Menu, Modal, Space, Tooltip, message } from 'antd';
+import { Button, Dropdown, Modal, Space, Tooltip, message } from 'antd';
+import type { MenuProps } from 'antd';
 import { 
   EditOutlined, 
   DeleteOutlined, 
@@ -8,7 +9,7 @@ import {
   GithubOutlined,
   LinkOutlined
 } from '@ant-design/icons';
-import { Project } from '@/hooks/useProjects';
+import { Project } from '@/types/project';
 import ProjectForm from './ProjectForm';
 
 interface ProjectActionsProps {
@@ -66,31 +67,27 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
     }
   };
 
-  const menu = (
-    <Menu
-      items={[
-        {
-          key: 'view',
-          label: 'View Details',
-          icon: <EyeOutlined />,
-          onClick: () => onView?.(project),
-        },
-        {
-          key: 'edit',
-          label: 'Edit',
-          icon: <EditOutlined />,
-          onClick: handleEdit,
-        },
-        {
-          key: 'delete',
-          label: 'Delete',
-          icon: <DeleteOutlined />,
-          danger: true,
-          onClick: handleDelete,
-        },
-      ]}
-    />
-  );
+  const items: MenuProps['items'] = [
+    {
+      key: 'view',
+      label: 'View Details',
+      icon: <EyeOutlined />,
+      onClick: () => onView?.(project),
+    },
+    {
+      key: 'edit',
+      label: 'Edit',
+      icon: <EditOutlined />,
+      onClick: handleEdit,
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: handleDelete,
+    },
+  ];
 
   return (
     <>
@@ -120,7 +117,7 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
           )}
         </Space>
         
-        <Dropdown overlay={menu} trigger={['click']}>
+        <Dropdown menu={{ items }} trigger={['click']}>
           <Button type="text" icon={<EllipsisOutlined />} />
         </Dropdown>
       </Space>
