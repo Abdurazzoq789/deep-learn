@@ -3,6 +3,7 @@ import Link from 'next/link';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const StyledHeader = styled.header`
   background: #fff;
@@ -73,7 +74,7 @@ export default function Header() {
       <StyledHeader>
         <Container>
           <Link href="/" passHref>
-            <Logo>AI Projects</Logo>
+            <Logo><Image src="/ai-learning.png" alt="Logo" width={50} height={40} /></Logo>
           </Link>
         </Container>
       </StyledHeader>
@@ -84,7 +85,7 @@ export default function Header() {
     <StyledHeader>
       <Container>
         <Link href="/" passHref>
-          <Logo>AI Projects</Logo>
+        <Logo><Image src="/ai-learning.png" alt="Logo" width={50} height={50} /></Logo>
         </Link>
         <Nav>
           <Menu
