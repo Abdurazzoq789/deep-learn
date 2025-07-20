@@ -17,6 +17,8 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
   const botBufferRef = useRef<string>('');
   const socketRef = useRef<WebSocket | null>(null);
   const audioRef = useRef<any>(null);
+  // Track audio format support
+  const audioFormatSupport = useRef<{mp3: boolean; ogg: boolean; wav: boolean} | null>(null);
   const speakingVideoRef = useRef<HTMLVideoElement | null>(null);
   const waitingVideoRef = useRef<HTMLVideoElement | null>(null);
   const audioLoadTimeoutIdRef = useRef<any>(null);
@@ -25,6 +27,8 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
   const [recording, setRecording] = useState(false);
   const [botSpeaking, setBotSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Track audio loading and playback state for UI feedback
+  const [audioState, setAudioState] = useState<'idle' | 'loading' | 'playing' | 'error'>('idle');
 
   // Initialize audio and video elements
   useEffect(() => {
@@ -32,24 +36,60 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
 
     console.log('Initializing audio and video elements');
 
+    // Detect audio format support
+    const detectAudioSupport = () => {
+      console.log('Detecting audio format support');
+      const audio = document.createElement('audio');
+
+      // Check if the browser supports audio at all
+      if (!audio || typeof audio.canPlayType !== 'function') {
+        console.warn('Browser does not support audio element');
+        return { mp3: false, ogg: false, wav: false };
+      }
+
+      // Test for different format support
+      const mp3Support = audio.canPlayType('audio/mpeg').replace('no', '') !== '';
+      const oggSupport = audio.canPlayType('audio/ogg; codecs="vorbis"').replace('no', '') !== '';
+      const wavSupport = audio.canPlayType('audio/wav; codecs="1"').replace('no', '') !== '';
+
+      console.log('Audio format support:', { mp3: mp3Support, ogg: oggSupport, wav: wavSupport });
+      return { mp3: mp3Support, ogg: oggSupport, wav: wavSupport };
+    };
+
+    // Initialize format support detection if not already done
+    if (!audioFormatSupport.current) {
+      audioFormatSupport.current = detectAudioSupport();
+    }
+
     // Initialize audio element
     if (!audioRef.current) {
       console.log('Creating new Audio element');
       const audio = new Audio();
 
-      // Set up audio event handlers
+      // Set up audio event handlers with more detailed logging
       audio.onplay = () => {
-        console.log('Audio started playing');
+        console.log('Audio started playing', {
+          currentTime: audio.currentTime,
+          duration: audio.duration,
+          src: audio.src
+        });
         setBotSpeaking(true);
       };
 
       audio.onended = () => {
-        console.log('Audio playback ended');
+        console.log('Audio playback ended', {
+          currentTime: audio.currentTime,
+          duration: audio.duration
+        });
         setBotSpeaking(false);
       };
 
       audio.onpause = () => {
-        console.log('Audio playback paused');
+        console.log('Audio playback paused', {
+          currentTime: audio.currentTime,
+          duration: audio.duration,
+          ended: audio.ended
+        });
         // Sometimes onended doesn't fire, so we use onpause as a backup
         setTimeout(() => {
           if (audioRef.current && audioRef.current.ended) {
@@ -60,14 +100,40 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
       };
 
       audio.onerror = (e) => {
-        console.error('Audio error:', e);
-        setError(`Audio playback error: ${audio.error?.message || 'Unknown error'}`);
+        const errorCodes = {
+          1: 'MEDIA_ERR_ABORTED',
+          2: 'MEDIA_ERR_NETWORK',
+          3: 'MEDIA_ERR_DECODE',
+          4: 'MEDIA_ERR_SRC_NOT_SUPPORTED'
+        };
+
+        const errorCode = audio.error ? audio.error.code : 0;
+        const errorMessage = errorCodes[errorCode as keyof typeof errorCodes] || 'Unknown error';
+
+        console.error('Audio error:', e, {
+          code: errorCode,
+          message: errorMessage,
+          details: audio.error?.message || 'No details available'
+        });
+
+        setError(`Audio playback error: ${errorMessage} - ${audio.error?.message || 'Unknown error'}`);
         setBotSpeaking(false);
       };
 
+      // Add more detailed event listeners for debugging
+      audio.onloadstart = () => console.log('Audio load started');
+      audio.onprogress = () => console.log('Audio download in progress');
+      audio.onstalled = () => console.log('Audio download stalled');
+      audio.onsuspend = () => console.log('Audio download suspended');
+      audio.onabort = () => console.log('Audio download aborted');
+      audio.ontimeupdate = () => console.log('Audio time updated:', audio.currentTime);
+
       // Add canplaythrough event to ensure audio is ready before playing
       audio.oncanplaythrough = () => {
-        console.log('Audio can play through without buffering');
+        console.log('Audio can play through without buffering', {
+          readyState: audio.readyState,
+          networkState: audio.networkState
+        });
       };
 
       // Set additional audio properties
@@ -382,183 +448,61 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
               // Add as new bot message
               setMessages((prev) => [...prev, { role: 'bot', text: fullText }]);
 
-              // Play audio using HTML Audio element
-              if (audioRef.current) {
-                console.log('Attempting to play audio');
+              // Use device's built-in speech synthesis instead of external TTS API
+              console.log('Using device speech synthesis for text-to-speech');
 
-                // Create speech synthesis URL
-                const ttsUrl = `https://api.deep-learn.uz/tts?text=${encodeURIComponent(fullText)}`;
-                console.log('TTS URL:', ttsUrl);
+              // Function to use device's built-in speech synthesis
+              const useDeviceSpeechSynthesis = (text: string):any => {
+                try {
+                  console.log('Using device speech synthesis');
+                  window.speechSynthesis.cancel(); // Cancel any ongoing speech
+                  const utterance = new SpeechSynthesisUtterance(text);
 
-                // Reset audio element before setting new source
-                audioRef.current.pause();
-                audioRef.current.currentTime = 0;
+                  // Set language to match user's locale or default to English
+                  utterance.lang = navigator.language || 'en-US';
 
-                // Track retry attempts
-                let retryCount = 0;
-                const maxRetries = 3;
+                  // Adjust speech parameters for better quality
+                  utterance.rate = 1.0;  // Normal speed
+                  utterance.pitch = 1.0; // Normal pitch
+                  utterance.volume = 1.0; // Full volume
 
-                // Function to attempt loading the audio
-                const attemptLoadAudio = (retryNum = 0) => {
-                  console.log(`Attempting to load audio (attempt ${retryNum + 1}/${maxRetries + 1})`);
-
-                  // Clear any existing timeout
-                  if (audioLoadTimeoutIdRef.current) {
-                    clearTimeout(audioLoadTimeoutIdRef.current);
-                    audioLoadTimeoutIdRef.current = null;
-                  }
-
-                  // Set up a load timeout for this attempt
-                  audioLoadTimeoutIdRef.current = setTimeout(() => {
-                    console.warn(`Audio load timeout on attempt ${retryNum + 1}`);
-
-                    if (retryNum < maxRetries) {
-                      // Try again with a different approach
-                      console.log(`Retrying audio load (${retryNum + 2}/${maxRetries + 1})`);
-                      retryCount++;
-
-                      // Remove the previous event listener before adding a new one
-                      audioRef.current?.removeEventListener('loadeddata', handleAudioLoaded);
-
-                      // Try a different approach on each retry
-                      if (retryNum === 0) {
-                        // First retry: Try with a different CORS setting
-                        audioRef.current.crossOrigin = 'use-credentials';
-                        attemptLoadAudio(retryCount);
-                      } else if (retryNum === 1) {
-                        // Second retry: Try with a cache-busting parameter
-                        const cacheBustUrl = `${ttsUrl}&cacheBust=${Date.now()}`;
-                        audioRef.current.src = cacheBustUrl;
-                        audioRef.current.crossOrigin = 'anonymous';
-                        attemptLoadAudio(retryCount);
-                      } else {
-                        // Last retry: Try with a fetch request first to warm up the connection
-                        fetch(ttsUrl, { mode: 'no-cors' })
-                          .then(() => {
-                            audioRef.current.src = ttsUrl;
-                            audioRef.current.crossOrigin = 'anonymous';
-                            attemptLoadAudio(retryCount);
-                          })
-                          .catch(e => {
-                            console.error('Fetch pre-warming failed:', e);
-                            // Continue with the retry anyway
-                            audioRef.current.src = ttsUrl;
-                            audioRef.current.crossOrigin = 'anonymous';
-                            attemptLoadAudio(retryCount);
-                          });
-                      }
-                    } else {
-                      // All retries failed, show error and use fallback
-                      console.error('All audio load attempts failed');
-                      setError('Audio load timeout - check network connection');
-
-                      // Use browser's built-in speech synthesis as fallback
-                      try {
-                        console.log('Using speech synthesis fallback');
-                        window.speechSynthesis.cancel(); // Cancel any ongoing speech
-                        const utterance = new SpeechSynthesisUtterance(fullText);
-                        utterance.onstart = () => {
-                          console.log('Fallback speech started');
-                          setBotSpeaking(true);
-                        };
-                        utterance.onend = () => {
-                          console.log('Fallback speech ended');
-                          setBotSpeaking(false);
-                        };
-                        utterance.onerror = (e) => {
-                          console.error('Fallback speech error:', e);
-                          setBotSpeaking(false);
-                        };
-                        window.speechSynthesis.speak(utterance);
-                      } catch (e) {
-                        console.error('Speech synthesis fallback failed:', e);
-                        // Force video state to reset after timeout
-                        setBotSpeaking(false);
-                      }
-                    }
-                  }, 8000); // Slightly shorter timeout for retries
-
-                  // Set up loadeddata event handler for this specific audio load
-                  const handleAudioLoaded = () => {
-                    console.log('Audio data loaded successfully');
-                    if (audioLoadTimeoutIdRef.current) {
-                      clearTimeout(audioLoadTimeoutIdRef.current);
-                      audioLoadTimeoutIdRef.current = null;
-                    }
-                    audioRef.current?.removeEventListener('loadeddata', handleAudioLoaded);
-
-                    // Play the audio now that it's loaded
-                    console.log('Starting audio playback');
-                    const playPromise = audioRef.current?.play();
-                    if (playPromise !== undefined) {
-                      playPromise
-                        .then(() => {
-                          console.log('Audio playback started successfully');
-                          setBotSpeaking(true); // Explicitly set speaking state
-                        })
-                        .catch((e:any) => {
-                          console.error('Audio playback error:', e);
-                          setError(`Audio playback error: ${e.message}`);
-
-                          // Try fallback speech synthesis
-                          try {
-                            console.log('Using speech synthesis fallback after playback error');
-                            window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(fullText);
-                            utterance.onstart = () => setBotSpeaking(true);
-                            utterance.onend = () => setBotSpeaking(false);
-                            window.speechSynthesis.speak(utterance);
-                          } catch (fallbackError) {
-                            console.error('Speech synthesis fallback failed:', fallbackError);
-                            // Try to recover by forcing video state cycle
-                            setBotSpeaking(true);
-                            setTimeout(() => {
-                              console.log('Forcing botSpeaking state to false after error');
-                              setBotSpeaking(false);
-                            }, 5000); // Reset after 5 seconds
-                          }
-                        });
-                    }
+                  utterance.onstart = () => {
+                    console.log('Device speech started');
+                    setBotSpeaking(true);
+                    setAudioState('playing'); // Update audio state to playing
                   };
 
-                  // Add the one-time event listener
-                  audioRef.current.addEventListener('loadeddata', handleAudioLoaded);
-
-                  // Also listen for the error event to handle loading failures
-                  const handleAudioError = (e:any) => {
-                    console.error('Audio loading error:', e);
-                    audioRef.current?.removeEventListener('error', handleAudioError);
-
-                    if (retryNum < maxRetries) {
-                      // Clear timeout and retry
-                      if (audioLoadTimeoutIdRef.current) {
-                        clearTimeout(audioLoadTimeoutIdRef.current);
-                        audioLoadTimeoutIdRef.current = null;
-                      }
-                      retryCount++;
-                      attemptLoadAudio(retryCount);
-                    }
+                  utterance.onend = () => {
+                    console.log('Device speech ended');
+                    setBotSpeaking(false);
+                    setAudioState('idle'); // Reset audio state when speech ends
                   };
 
-                  audioRef.current.addEventListener('error', handleAudioError, { once: true });
+                  utterance.onerror = (e) => {
+                    console.error('Device speech error:', e);
+                    setBotSpeaking(false);
+                    setAudioState('error'); // Set audio state to error on speech error
+                    setError('Speech synthesis error: ' + (e.error || 'Unknown error'));
+                  };
 
-                  // Ensure audio element is properly set up for this attempt
-                  if (retryNum === 0) {
-                    audioRef.current.src = ttsUrl;
-                    audioRef.current.crossOrigin = 'anonymous';
-                  }
+                  // Set speaking state immediately to show visual feedback
+                  setAudioState('loading');
 
-                  // Force a load to trigger the loadeddata event
-                  audioRef.current.load();
-                };
+                  // Speak the text
+                  window.speechSynthesis.speak(utterance);
+                  return true;
+                } catch (e) {
+                  console.error('Device speech synthesis failed:', e);
+                  // Force video state to reset after timeout
+                  setBotSpeaking(false);
+                  setAudioState('error'); // Set audio state to error on failure
+                  setError('Speech synthesis failed: ' + (e as Error).message);
+                  return false;
+                }
+              };
 
-                // Start the first attempt
-                attemptLoadAudio(0);
-
-                // Set speaking state immediately to show visual feedback
-                // This will be maintained or reset based on actual audio playback
-                setBotSpeaking(true);
-              }
+              // Use the device's speech synthesis
+              useDeviceSpeechSynthesis(fullText);
             }
             botBufferRef.current = '';
             setRecording(false);
@@ -608,11 +552,13 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
     setTranscript('');
     chunksRef.current = [];
     setError(null);
+    setAudioState('idle'); // Reset audio state when modal closes
+    setBotSpeaking(false); // Ensure bot speaking state is reset
   };
 
   return (
     <Modal
-      title="Real-Time Conversation"
+      title="AI Teacher"
       open={open}
       onCancel={onClose}
       afterClose={handleAfterClose}
@@ -681,9 +627,30 @@ const RealTimeSpeechModal: React.FC<Props> = ({ open, onClose }) => {
               borderRadius: '4px',
               backgroundColor: 'rgba(0, 0, 0, 0.6)',
               color: '#fff',
-              fontSize: '12px'
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}>
-              {botSpeaking ? 'Speaking' : 'Listening'}
+              {/* Audio state indicator */}
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor:
+                  audioState === 'playing' ? '#4CAF50' : // Green for playing
+                  audioState === 'loading' ? '#FFC107' : // Yellow for loading
+                  audioState === 'error' ? '#F44336' :   // Red for error
+                  '#9E9E9E',                            // Grey for idle
+                transition: 'background-color 0.3s ease'
+              }} />
+
+              {/* Status text */}
+              <span>
+                {botSpeaking ? 'Speaking' : 'Listening'}
+                {audioState === 'loading' && ' (Loading audio...)'}
+                {audioState === 'error' && ' (Audio issue)'}
+              </span>
             </div>
           </div>
 

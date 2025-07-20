@@ -157,6 +157,77 @@ The following additional fixes have been implemented to address specific issues 
    - Updated Modal component to use the recommended 'styles' prop instead of deprecated 'bodyStyle'
    - Maintained the same visual styling while following the latest Ant Design best practices
 
+## Latest Fixes (July 2025 Update 5)
+
+The following comprehensive improvements have been implemented to address intermittent audio playback issues:
+
+1. **Enhanced Audio Format Detection and Selection**
+   - Added browser capability detection for MP3, OGG, and WAV formats
+   - Implemented format preference system based on browser support
+   - Added format parameter to TTS URL for better server-side format selection
+   - Implemented format-specific fallbacks during retry attempts
+
+2. **Improved Audio Element Management**
+   - Added proper type checking with HTMLAudioElement instead of any
+   - Implemented fresh audio element creation for each playback attempt
+   - Added comprehensive cleanup of old audio elements to prevent memory leaks
+   - Implemented complete state reset between playback attempts
+
+3. **Enhanced Audio Loading and Playback Reliability**
+   - Reduced initial timeout duration from 8s to 5s for faster failure detection
+   - Implemented progressive timeouts that increase with each retry attempt
+   - Added staggered retry delays to avoid network congestion
+   - Implemented more sophisticated retry strategies:
+     - First retry: Try with a different audio format
+     - Second retry: Try with a cache-busting parameter
+     - Third retry: Pre-warm the connection with a fetch request
+
+4. **Improved Network Reliability**
+   - Added connection status monitoring before and during audio loading
+   - Implemented offline detection with appropriate fallback mechanisms
+   - Added handling for network changes during audio loading
+   - Enhanced error recovery for network-related issues
+
+5. **Enhanced Error Handling and Recovery**
+   - Added detailed error type detection and specific error messages
+   - Implemented more robust speech synthesis fallback mechanism
+   - Added safety timeout based on audio duration to ensure proper state management
+   - Improved cleanup of event listeners and timeouts to prevent memory leaks
+
+6. **Added Visual Feedback for Audio State**
+   - Implemented audio state tracking (idle, loading, playing, error)
+   - Added color-coded status indicator in the UI
+   - Added descriptive text for different audio states
+   - Ensured proper state reset when modal closes
+
+## Latest Fixes (July 2025 Update 6)
+
+The following changes have been implemented to use the device's built-in speech synthesis capabilities instead of the external TTS API:
+
+1. **Removed External TTS API Dependency**
+   - Eliminated all calls to the external api.deep-learn.uz TTS service
+   - Removed complex audio loading and retry logic that was needed for external API
+   - Simplified the codebase by removing network-related error handling for audio
+   - Reduced potential points of failure by eliminating external service dependency
+
+2. **Implemented Device's Built-in Speech Synthesis**
+   - Used the Web Speech API's SpeechSynthesis interface as the primary TTS method
+   - Enhanced the speech synthesis implementation with proper event handling
+   - Added language detection based on user's browser locale
+   - Optimized speech parameters (rate, pitch, volume) for better quality
+
+3. **Improved Speech Synthesis Reliability**
+   - Added comprehensive error handling specific to speech synthesis
+   - Implemented proper state management for speech events
+   - Added detailed logging for speech synthesis operations
+   - Ensured proper cleanup of speech synthesis resources
+
+4. **Browser Compatibility Considerations**
+   - The Web Speech API is supported in most modern browsers (Chrome, Edge, Safari, Firefox)
+   - Added graceful error handling for browsers with limited or no speech synthesis support
+   - Maintained the same video switching logic to ensure consistent visual experience
+   - Preserved all UI state indicators to provide feedback on speech status
+
 ## Troubleshooting
 
 If you encounter issues with the RealTimeSpeechModal component, check the following:

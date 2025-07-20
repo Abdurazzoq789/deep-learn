@@ -35,10 +35,10 @@ const ProjectsGrid = styled(Row)`
 const staticProjects: Project[] = [
   {
     id: 'realtime-speech',
-    title: 'Real-Time Speech',
+    title: 'AI Teacher',
     description: 'Talk via microphone and watch live transcript with synchronized visuals.',
-    imageUrl: '/images/projects/real-time-speech.png',
-    tags: ['WebSocket', 'Audio', 'NLP'],
+    imageUrl: '/images/projects/ai-teacher.png',
+    tags: ['AI TEACHER', 'Audio', 'NLP'],
     category: 'Speech',
     demoUrl: '#',
     createdAt: new Date().toISOString(),
@@ -79,7 +79,7 @@ export default function ProjectsSection() {
       setEssayModalOpen(true);
     } else if (lower.includes('detector') || lower.includes('detect')) {
       setAiModalOpen(true);
-    } else if (lower.includes('speech')) {
+    } else if (lower.includes('ai teacher')) {
       setSpeechModalOpen(true);
     }
   };
