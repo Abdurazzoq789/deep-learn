@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import ProjectCard from './ProjectCard';
 import EssayCheckerModal from './demos/EssayCheckerModal';
 import AIDetectorModal from './demos/AIDetectorModal';
+import RealTimeSpeechModal from './demos/RealTimeSpeechModal';
 import { Project } from '@/types/project';
 
 const { Title, Paragraph } = Typography;
@@ -33,6 +34,17 @@ const ProjectsGrid = styled(Row)`
 
 const staticProjects: Project[] = [
   {
+    id: 'realtime-speech',
+    title: 'Real-Time Speech',
+    description: 'Talk via microphone and watch live transcript with synchronized visuals.',
+    imageUrl: '/images/projects/real-time-speech.png',
+    tags: ['WebSocket', 'Audio', 'NLP'],
+    category: 'Speech',
+    demoUrl: '#',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
     id: 'essay-demo',
     title: 'Essay Checking',
     description: 'Check your IELTS-style essay and instantly receive band score feedback and detailed suggestions.',
@@ -59,6 +71,7 @@ const staticProjects: Project[] = [
 export default function ProjectsSection() {
   const [essayModalOpen, setEssayModalOpen] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [speechModalOpen, setSpeechModalOpen] = useState(false);
 
   const handleView = (project: Project) => {
     const lower = project.title.toLowerCase();
@@ -66,6 +79,8 @@ export default function ProjectsSection() {
       setEssayModalOpen(true);
     } else if (lower.includes('detector') || lower.includes('detect')) {
       setAiModalOpen(true);
+    } else if (lower.includes('speech')) {
+      setSpeechModalOpen(true);
     }
   };
 
@@ -88,6 +103,7 @@ export default function ProjectsSection() {
       </Section>
       <EssayCheckerModal open={essayModalOpen} onClose={() => setEssayModalOpen(false)} />
       <AIDetectorModal open={aiModalOpen} onClose={() => setAiModalOpen(false)} />
+      <RealTimeSpeechModal open={speechModalOpen} onClose={() => setSpeechModalOpen(false)} />
     </>
   );
 }

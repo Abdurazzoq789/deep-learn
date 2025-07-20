@@ -64,19 +64,19 @@ const teamMembers = [
   {
     name: 'Jasurbek Yuldashov',
     role: 'Fullstack developer (Java script, Node Js)',
-    avatar: '/path/to/Jasurbek.jpg', // Placeholder
+    avatar: '/images/team/jasurbek.jpeg', // Placeholder
     animationDelay: '0.4s'
   },
   {
     name: 'Abdurazzoq Rasulmuhammedov',
     role: 'AI Engineer (Python, Node js,PHP)',
-    avatar: '/path/to/Abdurazzoq.jpg', // Placeholder
+    avatar: '/images/team/abdurazzoq.jpeg', // Placeholder
     animationDelay: '0.6s'
   },
   {
     name: 'Ziyodbek Ahmadjonov',
     role: 'Frontend Developer (Java script, React js)',
-    avatar: '/path/to/Ziyodbek.jpg', // Placeholder
+    avatar: '/images/team/ziyodbek.jpeg', // Placeholder
     animationDelay: '0.8s'
   }
 ];
